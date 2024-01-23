@@ -7,18 +7,7 @@
 		{
 			"Name": "OneLastGrind",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
-		},
-		{
-			"Name": "OneLastGrindEditor",
-			"Type": "Editor",
-			"LoadingPhase": "PostEngineInit",
-			"AdditionalDependencies": [
-				"DetailCustomizations"
-			]
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
