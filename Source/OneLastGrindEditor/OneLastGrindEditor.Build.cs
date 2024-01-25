@@ -7,7 +7,6 @@ public class OneLastGrindEditor : ModuleRules
     public OneLastGrindEditor(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-
         PublicDependencyModuleNames.AddRange(new string[]
         {
             "Core",

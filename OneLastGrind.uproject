@@ -7,18 +7,12 @@
 		{
 			"Name": "OneLastGrind",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
+			"LoadingPhase": "Default"
 		},
 		{
 			"Name": "OneLastGrindEditor",
 			"Type": "Editor",
-			"LoadingPhase": "PostEngineInit",
-			"AdditionalDependencies": [
-				"DetailCustomizations"
-			]
+			"LoadingPhase": "PostEngineInit"
 		}
 	],
 	"Plugins": [
@@ -28,11 +22,6 @@
 			"TargetAllowList": [
 				"Editor"
 			]
-		},
-		{
-			"Name": "ElectronicNodes",
-			"Enabled": true,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/5cb2a394d0c04e73891762be4cbd7216"
 		}
 	]
 }
