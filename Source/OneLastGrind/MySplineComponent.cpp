@@ -17,7 +17,7 @@ USplineMetadata* UMySplineComponent::GetSplinePointsMetadata()
 
 const USplineMetadata* UMySplineComponent::GetSplinePointsMetadata() const
 {
-	return GetSplinePointsMetadata();
+	return const_cast<UMySplineComponent*>(this)->GetSplinePointsMetadata();
 }
 
 void UMySplineComponent::FixupPoints()

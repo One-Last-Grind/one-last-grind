@@ -32,7 +32,7 @@ FName FMySplineMetadataDetails::GetName() const
 
 FText FMySplineMetadataDetails::GetDisplayName() const
 {
-	return LOCTEXT("MySplineMetadataDetails", "SPM");
+	return LOCTEXT("MySplineMetadataDetails", "Metadata");
 }
 
 template<class T>
@@ -55,7 +55,7 @@ void FMySplineMetadataDetails::Update(USplineComponent* InSplineComponent, const
 {
 	SplineComp = InSplineComponent;
 	SelectedKeys = InSelectedKeys;
-	TestFloatValue.Reset();
+	IsStopPointValue.Reset();
 
 	if (InSplineComponent)
 	{
@@ -70,7 +70,7 @@ void FMySplineMetadataDetails::Update(USplineComponent* InSplineComponent, const
 				{
 					if (bUpdateTestFloat)
 					{
-						bUpdateTestFloat = UpdateMultipleValue(TestFloatValue, Metadata->PointParams[Index].TestFloat);
+						bUpdateTestFloat = UpdateMultipleValue(IsStopPointValue, Metadata->PointParams[Index].IsStopPoint);
 					}
 				}
 			}
@@ -87,24 +87,23 @@ void FMySplineMetadataDetails::GenerateChildContent(IDetailGroup& DetailGroup)
 		.VAlign(VAlign_Center)
 		[
 			SNew(STextBlock)
-				.Text(LOCTEXT("TestFloat", "TestFloat"))
+				.Text(LOCTEXT("IsStopPoint", "IsStopPoint"))
 				.Font(IDetailLayoutBuilder::GetDetailFont())
 		]
 		.ValueContent()
 		.MinDesiredWidth(125.0f)
 		.MaxDesiredWidth(125.0f)
 		[
-			SNew(SNumericEntryBox<float>)
-				.Value(this, &FMySplineMetadataDetails::GetTestFloat)
-				.AllowSpin(false)
-				.MinValue(0.0f)
-				.MaxValue(TOptional<float>())
-				.MinSliderValue(0.0f)
-				.MaxSliderValue(TOptional<float>()) // No upper limit
-				.UndeterminedString(LOCTEXT("Multiple", "Multiple"))
-				.OnValueCommitted(this, &FMySplineMetadataDetails::OnSetTestFloat)
-				.Font(IDetailLayoutBuilder::GetDetailFont())
+			SNew(SCheckBox)
+				.IsChecked(this, &FMySplineMetadataDetails::OnIsCheckedIsOnPoint)
+				.OnCheckStateChanged(this, &FMySplineMetadataDetails::OnSetIsStopPoint)
 		];
+	
+}
+
+ECheckBoxState FMySplineMetadataDetails::OnIsCheckedIsOnPoint() const {
+	ECheckBoxState res = GetIsStopPoint().GetValue();
+	return res;
 }
 
 void FMySplineMetadataDetails::OnSetValues(FMySplineMetadataDetails& Details)
@@ -119,15 +118,15 @@ void FMySplineMetadataDetails::OnSetValues(FMySplineMetadataDetails& Details)
 	GEditor->RedrawLevelEditingViewports(true);
 }
 
-void FMySplineMetadataDetails::OnSetTestFloat(float NewValue, ETextCommit::Type CommitInfo)
+void FMySplineMetadataDetails::OnSetIsStopPoint(ECheckBoxState NewValue)
 {
 	if (UMySplineMetadata* Metadata = GetMetadata())
 	{
-		const FScopedTransaction Transaction(LOCTEXT("SetTestFloat", "Set spline point test float"));
+		const FScopedTransaction Transaction(LOCTEXT("SetIsStopPoint", "Set spline point is stop point"));
 
 		for (int32 Index : SelectedKeys)
 		{
-			Metadata->PointParams[Index].TestFloat = NewValue;
+			Metadata->PointParams[Index].IsStopPoint = NewValue == ECheckBoxState::Checked;
 		}
 
 		OnSetValues(*this);
@@ -140,9 +139,9 @@ UMySplineMetadata* FMySplineMetadataDetails::GetMetadata() const
 	return Metadata;
 }
 
-TOptional<float> FMySplineMetadataDetails::GetTestFloat() const
+TOptional<ECheckBoxState> FMySplineMetadataDetails::GetIsStopPoint() const
 {
-	return TestFloatValue;
+	return IsStopPointValue.GetValue() ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
 }
 
 #undef LOCTEXT_NAMESPACE

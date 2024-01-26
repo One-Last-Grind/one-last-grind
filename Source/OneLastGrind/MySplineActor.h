@@ -11,11 +11,14 @@ class UMySplineMetadata;
 class UMySplineComponent;
 
 UCLASS()
-class ONELASTGRIND_API AMySplineActor : public AActor
+class ONELASTGRIND_API AMySplineActor : public APawn
 {
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
+	bool GetPropertyValueAtSplinePoint(int index);
+
 	AMySplineActor();
 	UMySplineMetadata* GetSplineMetadata() const;
 

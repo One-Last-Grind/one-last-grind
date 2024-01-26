@@ -21,3 +21,10 @@ UMySplineMetadata* AMySplineActor::GetSplineMetadata() const
 {
 	return MySplineMetadata;
 }
+
+bool AMySplineActor::GetPropertyValueAtSplinePoint(int index) {
+	if (IsValid(GetSplineMetadata()) && index < GetSplineMetadata()->PointParams.Num()) {
+		return GetSplineMetadata()->PointParams[index].IsStopPoint;
+	}
+	return false;
+}
