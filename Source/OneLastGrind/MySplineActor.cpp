@@ -22,9 +22,12 @@ UMySplineMetadata* AMySplineActor::GetSplineMetadata() const
 	return MySplineMetadata;
 }
 
-bool AMySplineActor::GetPropertyValueAtSplinePoint(int index) {
+void AMySplineActor::GetPropertyValueAtSplinePoint(int index, int& IsStopPoint, int& SplineDirection) {
 	if (IsValid(GetSplineMetadata()) && index < GetSplineMetadata()->PointParams.Num()) {
-		return GetSplineMetadata()->PointParams[index].IsStopPoint;
+		SplineDirection = GetSplineMetadata()->PointParams[index].SplineDirection;
+		IsStopPoint = GetSplineMetadata()->PointParams[index].IsStopPoint;
+		return;
 	}
-	return false;
+	IsStopPoint = -1;
+	SplineDirection = -1;
 }

@@ -32,13 +32,14 @@ public:
 
 private:
 	UMySplineMetadata* GetMetadata() const;
-	TOptional<ECheckBoxState> GetIsStopPoint() const;
-	void OnSetIsStopPoint(ECheckBoxState NewValue);
+	TOptional<int> GetIsStopPoint() const;
+	TOptional<int> GetSplineDirection() const;
+	void OnSetIsStopPoint(int NewValue, ETextCommit::Type CommitInfo);
+	void OnSetSplineDirection(int NewValue, ETextCommit::Type CommitInfo);
 	void OnSetValues(FMySplineMetadataDetails& Details);
 
-	TOptional<bool> IsStopPointValue;
+	TOptional<int> IsStopPointValue;
+	TOptional<int> SplineDirectionValue;
 	USplineComponent* SplineComp = nullptr;
 	TSet<int32> SelectedKeys;
-
-	ECheckBoxState OnIsCheckedIsOnPoint() const;
 };

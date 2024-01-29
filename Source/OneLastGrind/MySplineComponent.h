@@ -14,7 +14,9 @@ struct FMySplinePointParams
 
 public:
 	UPROPERTY(EditAnywhere)
-	bool IsStopPoint = false;
+	int IsStopPoint = 0;
+	UPROPERTY(EditAnywhere)
+	int SplineDirection = 0;
 };
 
 UCLASS(meta = (BlueprintSpawnableComponent))

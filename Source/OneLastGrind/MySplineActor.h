@@ -17,7 +17,7 @@ class ONELASTGRIND_API AMySplineActor : public APawn
 
 public:
 	UFUNCTION(BlueprintCallable)
-	bool GetPropertyValueAtSplinePoint(int index);
+	void GetPropertyValueAtSplinePoint(int index, int& IsStopPoint, int& SplineDirection);
 
 	AMySplineActor();
 	UMySplineMetadata* GetSplineMetadata() const;
