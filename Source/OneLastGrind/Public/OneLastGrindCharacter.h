@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include <CustomCharacterMovementComponent.h>
 #include "OneLastGrindCharacter.generated.h"
 
 class USpringArmComponent;
@@ -20,6 +21,11 @@ class AOneLastGrindCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) UCustomCharacterMovementComponent * CustomCharacterMovementComponent;
+
+private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -45,7 +51,7 @@ class AOneLastGrindCharacter : public ACharacter
 	UInputAction* LookAction;
 
 public:
-	AOneLastGrindCharacter();
+	AOneLastGrindCharacter(const FObjectInitializer& ObjectInitializer);
 	
 
 protected:

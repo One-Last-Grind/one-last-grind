@@ -10,14 +10,18 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "CustomCharacterMovementComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
 // AOneLastGrindCharacter
 
-AOneLastGrindCharacter::AOneLastGrindCharacter()
+AOneLastGrindCharacter::AOneLastGrindCharacter(const FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
+
+	CustomCharacterMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
@@ -92,6 +96,7 @@ void AOneLastGrindCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
+
 
 void AOneLastGrindCharacter::Move(const FInputActionValue& Value)
 {
