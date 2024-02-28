@@ -2,10 +2,24 @@
 
 
 #include "CustomCharacterMovementComponent.h"
+#include "OneLastGrindCharacter.h"
 #include "Engine/Engine.h"
 
 UCustomCharacterMovementComponent::UCustomCharacterMovementComponent()
 {
+}
+
+void UCustomCharacterMovementComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	OneLastGrindCharacterOwner = Cast<AOneLastGrindCharacter>(GetOwner());
+
+}
+
+bool UCustomCharacterMovementComponent::IsCustomMovementMode(ECustomMovementMode InCustomMovementMode)
+{
+	return MovementMode == MOVE_Custom && CustomMovementMode == InCustomMovementMode;
 }
 
 void UCustomCharacterMovementComponent::PhysWalking(float deltaTime, int32 Iterations)
@@ -14,6 +28,8 @@ void UCustomCharacterMovementComponent::PhysWalking(float deltaTime, int32 Itera
 
 	FString MyDebugString = FString::Printf(TEXT("custom walking called!"));
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 0.1f, FColor::Yellow, MyDebugString, false, FVector2D::UnitVector * 1.2f);
+	
+
 
 
 }
@@ -25,3 +41,5 @@ void UCustomCharacterMovementComponent::PhysFalling(float deltaTime, int32 Itera
 	FString MyDebugString = FString::Printf(TEXT("custom falling called!"));
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 0.1f, FColor::Yellow, MyDebugString, false, FVector2D::UnitVector * 1.2f);
 }
+
+

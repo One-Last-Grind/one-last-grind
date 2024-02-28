@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OneLastGrind.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
-#include <CustomCharacterMovementComponent.h>
 #include "OneLastGrindCharacter.generated.h"
 
 class USpringArmComponent;
@@ -23,7 +23,7 @@ class AOneLastGrindCharacter : public ACharacter
 
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) UCustomCharacterMovementComponent * CustomCharacterMovementComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) UCustomCharacterMovementComponent* CustomCharacterMovementComponent;
 
 private:
 	/** Camera boom positioning the camera behind the character */
