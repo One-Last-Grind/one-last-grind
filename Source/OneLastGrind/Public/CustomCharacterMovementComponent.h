@@ -40,7 +40,10 @@ class ONELASTGRIND_API UCustomCharacterMovementComponent : public UCharacterMove
 	UPROPERTY(EditDefaultsOnly) float SkateGravityForce = 4000.f;
 	UPROPERTY(EditDefaultsOnly) float SkateFrictionFactor = .06f;
 	UPROPERTY(EditDefaultsOnly) float BrakingDecelerationSkating = 1000.f;
+	UPROPERTY(EditDefaultsOnly) float SkateRotateAlignementSpeed = 15.f;
 
+
+	
 
 public:
 	UCustomCharacterMovementComponent();
@@ -51,6 +54,7 @@ public:
 
 // Custom Movement Mode
 private:
+	float DEBUG_ARROW_THICNKESS = 2.f;
 
 
 	void PhysSkate(float deltaTime, int32 Iterations);
@@ -58,8 +62,8 @@ private:
 
 	// Helper functions
 	bool CheckFloor(FHitResult& Hit) const;
+	bool GetSkateSurfaceNormalAvg(FVector& normalAverage) const;
 
-	float DEBUG_ARROW_THICNKESS = 2.f;
 
 
 

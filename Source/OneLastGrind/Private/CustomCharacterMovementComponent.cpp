@@ -45,24 +45,66 @@ void UCustomCharacterMovementComponent::PhysWalking(float deltaTime, int32 Itera
 	}
 
 	// Ensure velocity is horizontal.
-	MaintainHorizontalGroundVelocity();
+	//MaintainHorizontalGroundVelocity();
 
 	FindFloor(UpdatedComponent->GetComponentLocation(), CurrentFloor, false);
 
-	FVector SlopeForce = CurrentFloor.HitResult.Normal;
-	SlopeForce.Z = 0.f;
-	Velocity += SlopeForce * SkateGravityForce * deltaTime;
+	FVector SlopeVector = CurrentFloor.HitResult.Normal;
+	SlopeVector.Z = 0.f;
+	Velocity += SlopeVector * SkateGravityForce * deltaTime;
 
 	
 	
-	FStepDownResult StepDownResult;
-	MoveAlongFloor(Velocity, deltaTime, &StepDownResult);
+	//FStepDownResult StepDownResult;
+	//MoveAlongFloor(Velocity, deltaTime, &StepDownResult);
+
+	const FVector Delta = RotateGravityToWorld(RotateWorldToGravity(Velocity) * FVector(1.0, 1.0, 0.0)) * deltaTime;
+
+	FVector RampVector = ComputeGroundMovementDelta(Delta, CurrentFloor.HitResult, CurrentFloor.bLineTrace);
+
+	DrawDebugDirectionalArrow(GetWorld(), UpdatedComponent->GetComponentLocation(), UpdatedComponent->GetComponentLocation() + RampVector * 100.0f, 1.0f, FColor::Cyan, false, 0, DEBUG_ARROW_THICNKESS);
+	DrawDebugDirectionalArrow(GetWorld(), UpdatedComponent->GetComponentLocation(), UpdatedComponent->GetComponentLocation() + Delta * 100.f, 1.0f, FColor::Purple, false, 0, DEBUG_ARROW_THICNKESS);
 
 
-	if (StepDownResult.bComputedFloor && StepDownResult.FloorResult.bWalkableFloor)
+	float DesiredPitch = 40.f; // Assign your desired pitch angle here
+
+	// Convert the pitch angle to radians
+	float PitchRadians = FMath::DegreesToRadians(DesiredPitch);
+
+	// Create a rotation quaternion with only pitch rotation
+	FQuat PitchRotation = FQuat(FVector::ZAxisVector, 45.f);
+
+
+	//Rotate player to slope if grounded
+	FQuat NewRotation = UpdatedComponent->GetComponentRotation().Quaternion();
+	FVector NormalAverage;
+
+	
+	if (GetSkateSurfaceNormalAvg(NormalAverage))
 	{
-		Velocity = FVector::ZeroVector;
+		DrawDebugDirectionalArrow(GetWorld(), UpdatedComponent->GetComponentLocation(), UpdatedComponent->GetComponentLocation() + NormalAverage * 100.f, 1.0f, FColor::Emerald, false, 0, DEBUG_ARROW_THICNKESS);
+		// Z axis
+		FRotator GroundAlignment = FRotationMatrix::MakeFromZX(NormalAverage, UpdatedComponent->GetForwardVector()).Rotator();
+		
+		//GroundAlignment = FRotator(0.0f, 0.f, 45.f).Quaternion();
+		// Interpolate rotation smoothly
+		NewRotation = FMath::RInterpTo(UpdatedComponent->GetComponentRotation(), GroundAlignment, deltaTime, 15.f).Quaternion();
+
+		//NewRotation = FQuat::Slerp(UpdatedComponent->GetComponentRotation().Quaternion(), GroundAlignment, deltaTime * 15.0f);
 	}
+	
+
+
+	FHitResult Hit(1.f);
+	SafeMoveUpdatedComponent(RampVector, NewRotation, true, Hit);
+
+	FString DebugRotation = FString::Printf(TEXT("New rotation: %s"), *UpdatedComponent->GetComponentQuat().ToString());
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 0.0f, FColor::White, DebugRotation, false, FVector2D::UnitVector * 1.2f);
+
+	//if (StepDownResult.bComputedFloor && StepDownResult.FloorResult.bWalkableFloor)
+	//{
+	//	Velocity = FVector::ZeroVector;
+	//}
 
 	
 	FString DebugTest = FString::Printf(TEXT("Find floor: %s"), *CurrentFloor.HitResult.Normal.ToString());
@@ -91,10 +133,9 @@ void UCustomCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterat
 
 void UCustomCharacterMovementComponent::PhysSkate(float deltaTime, int32 Iterations)
 {
-	FString DebugString = FString::Printf(TEXT("Current Movement Mode: %s"), *GetMovementName());
+	FString DebugString = FString::Printf(TEXT("Currently Skating"));
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 0.0f, FColor::White, DebugString, false, FVector2D::UnitVector * 1.2f);
 	FHitResult SurfaceHit;
-
 
 	if (!CheckFloor(SurfaceHit)) {
 
@@ -103,35 +144,35 @@ void UCustomCharacterMovementComponent::PhysSkate(float deltaTime, int32 Iterati
 		return;
 	}
 
-	/*FVector Gravity = FVector::DownVector * SkateGravityForce;
-	FVector PerpGravity = -SurfaceHit.ImpactNormal.GetSafeNormal() * SkateGravityForce;
-	FVector ParGravity = Gravity - PerpGravity;
 
-	Velocity += ParGravity * deltaTime;
+	FVector Gravity = FVector::DownVector;
+	FVector ParGravity = FVector::DotProduct(Gravity, SurfaceHit.Normal) * SurfaceHit.Normal;
+	FVector PerpGravity = Gravity - ParGravity;
+	
+	float ParAcceleration = ParGravity.Size() / Mass;
+	float SlidingTime = 10.f;
+	float SlidingVelocity = ParAcceleration * SlidingTime;
+
+	Velocity += SkateGravityForce * SurfaceHit.Normal * SlidingVelocity * deltaTime;
+	Velocity += SkateGravityForce * FVector::DownVector * deltaTime;
+
+
+	//Turn to local coordinates because we are rotating the skater
+	double localForwardVelocity = FVector::DotProduct(UpdatedComponent->GetForwardVector(), Velocity);
+	double localUpVelocity = FVector::DotProduct(UpdatedComponent->GetUpVector(), Velocity);
+	double localRightVelocity = FVector::DotProduct(UpdatedComponent->GetRightVector(), Velocity);
+
+	//constrain to only moving forward/backward (with a little bit of sliding based on SidewaysWheelSlide value)
+	localRightVelocity *= 0.5f;
+
+	//convert to global for velocity
+	Velocity = localForwardVelocity * UpdatedComponent->GetForwardVector() + localUpVelocity * UpdatedComponent->GetUpVector() + localRightVelocity * UpdatedComponent->GetRightVector();
+
+
+	FVector Adjusted = Velocity * deltaTime;
 
 	FHitResult Hit(1.f);
-	SafeMoveUpdatedComponent(Velocity, UpdatedComponent->GetComponentQuat(), true, Hit);*/
-
-	FindFloor(UpdatedComponent->GetComponentLocation(), CurrentFloor, false);
-	// Ensure velocity is horizontal.
-	MaintainHorizontalGroundVelocity();
-
-	FVector SlopeForce = CurrentFloor.HitResult.Normal;
-	SlopeForce.Z = 0.f;
-	DrawDebugDirectionalArrow(GetWorld(), UpdatedComponent->GetComponentLocation(), UpdatedComponent->GetComponentLocation() + SlopeForce * 100, 1.0f, FColor::Green, false, 0, 3 * DEBUG_ARROW_THICNKESS);
-
-
-	Velocity += SlopeForce * SkateGravityForce * deltaTime;
-
-	Acceleration = Acceleration.ProjectOnTo(UpdatedComponent->GetRightVector().GetSafeNormal2D());
-
-	// Apply acceleration
-	CalcVelocity(deltaTime, GroundFriction * SkateFrictionFactor, false, GetMaxBrakingDeceleration());
-
-	// try to move forward
-	MoveAlongFloor(Velocity, deltaTime);
-
-	SafeMoveUpdatedComponent(Velocity, UpdatedComponent->GetComponentQuat(), true, SurfaceHit);
+	SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
 }
 
 
@@ -176,6 +217,40 @@ bool UCustomCharacterMovementComponent::CheckFloor(FHitResult& Hit) const
 	}
 
 	return false;
+}
+
+bool UCustomCharacterMovementComponent::GetSkateSurfaceNormalAvg(FVector& normalAverage) const
+{
+	UCapsuleComponent* CharacterCapsule = CharacterOwner->GetCapsuleComponent(); // Replace with your character's capsule component reference
+	FVector ForwardVector = CharacterOwner->GetActorForwardVector();
+	FVector DownVector = CharacterOwner->GetActorUpVector();
+
+	// Calculate the start and end locations for the first line trace (front of the capsule)
+	FVector StartLocationFront = CharacterCapsule->GetComponentLocation() + (ForwardVector * CharacterCapsule->GetScaledCapsuleRadius());
+	FVector EndLocationFront = StartLocationFront - (DownVector * CharacterCapsule->GetScaledCapsuleHalfHeight() * 1.5f);
+	FHitResult FirstHitResult;
+	FCollisionQueryParams TraceParams(FName(TEXT("Trace")), true, nullptr);
+
+	DrawDebugLine(GetWorld(), StartLocationFront, EndLocationFront, FColor::Purple, false, .1f, 0, 5);
+	bool isFrontGrounded = GetWorld()->LineTraceSingleByChannel(FirstHitResult, StartLocationFront, EndLocationFront, ECC_Visibility, TraceParams);
+
+	// Calculate the start and end locations for the second line trace (back of the capsule)
+	FVector StartLocationBack = CharacterCapsule->GetComponentLocation() - (ForwardVector * CharacterCapsule->GetScaledCapsuleRadius());
+	FVector EndLocationBack = StartLocationBack - (DownVector * CharacterCapsule->GetScaledCapsuleHalfHeight() * 1.5f);
+	FHitResult SecondHitResult;
+	DrawDebugLine(GetWorld(), StartLocationBack, EndLocationBack, FColor::Purple, false, .1f, 0, 5);
+	bool isBackGrounded = GetWorld()->LineTraceSingleByChannel(SecondHitResult, StartLocationBack, EndLocationBack, ECC_Visibility, TraceParams);
+
+	// Calculate the average normal vector
+	FVector AverageNormal = (FirstHitResult.Normal + SecondHitResult.Normal).GetSafeNormal();
+
+	if (!isBackGrounded && !isFrontGrounded)
+	{
+		return false;
+	}
+
+	normalAverage = AverageNormal;
+	return true;
 }
 
 // Tick
