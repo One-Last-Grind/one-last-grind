@@ -17,6 +17,19 @@ void AOneLastGrindPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AController* ControllerRef = GetController();
+
+
+	if (UWorld* World = GetWorld())
+	{
+		if (AOneLastGrindGameMode* GameMode = Cast<AOneLastGrindGameMode>(World->GetAuthGameMode()))
+		{
+			if (AActor* PlayerStart = GameMode->FindPlayerStart(ControllerRef))
+			{
+				GameMode->LastCheckPoint = PlayerStart;
+			}
+		}
+	}
 }
 
 // Called when actor is destroyed
@@ -36,14 +49,13 @@ void AOneLastGrindPawn::CallRespawnPlayer()
 {
 	AController* ControllerRef = GetController();
 
-
-	// Destroy the player
-	Destroy();
-
 	if (UWorld* World = GetWorld())
 	{
 		if (AOneLastGrindGameMode* GameMode = Cast<AOneLastGrindGameMode>(World->GetAuthGameMode()))
 		{
+			if (GameMode->LastCheckPoint == nullptr) return;
+
+			Destroy();
 			GameMode->RestartPlayer(ControllerRef);
 		}
 	}

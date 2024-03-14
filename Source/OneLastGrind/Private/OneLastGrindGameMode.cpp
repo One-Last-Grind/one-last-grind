@@ -11,6 +11,14 @@ AOneLastGrindGameMode::AOneLastGrindGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+
+	// set the player controller to be our blueprint pc
+	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Game/OneLastGrind/Core/Player/BP_PlayerController"));
+	if (PlayerControllerBPClass.Class != NULL)
+	{
+		PlayerControllerClass = PlayerControllerBPClass.Class;
+	}
+
 }
 
 
@@ -33,6 +41,7 @@ void AOneLastGrindGameMode::RestartPlayer(AController* NewPlayer)
 	if (LastCheckPoint != nullptr)
 	{
 		Super::RestartPlayerAtTransform(NewPlayer, LastCheckPoint->GetActorTransform());
+
 	}
 }
 
