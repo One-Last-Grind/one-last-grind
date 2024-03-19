@@ -7,10 +7,7 @@
 		{
 			"Name": "OneLastGrind",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
@@ -22,11 +19,7 @@
 			]
 		},
 		{
-			"Name": "Water",
-			"Enabled": true
-		},
-		{
-			"Name": "MovieRenderPipeline",
+			"Name": "PCG",
 			"Enabled": true
 		}
 	]
