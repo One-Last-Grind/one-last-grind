@@ -1,4 +1,5 @@
 #include "MyCustomPhysicsLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 void UMyCustomPhysicsLibrary::SetPhysicalMaterialDetails(UStaticMeshComponent* Mesh, float StaticFriction, float DynamicFriction, bool bOverrideFrictionCombineMode, TEnumAsByte<EFrictionCombineMode::Type> FrictionCombineMode, float Restitution, bool bOverrideRestitutionCombineMode, TEnumAsByte<EFrictionCombineMode::Type> RestitutionCombineMode) {
 	UPhysicalMaterial* PhysicalMaterial = NewObject<UPhysicalMaterial>();
@@ -13,4 +14,20 @@ void UMyCustomPhysicsLibrary::SetPhysicalMaterialDetails(UStaticMeshComponent* M
 
 	PhysicalMaterial->AddToRoot(); // this is done to prevent it from being garbage collected
 	Mesh->SetPhysMaterialOverride(PhysicalMaterial);
+}
+
+void UMyCustomPhysicsLibrary::SetLevelOffset(UObject* WorldObject, FName Level, FVector WorldOffset, bool WorldShift) {
+	UObject* WorldContextObject = WorldObject->GetWorld();
+	ULevelStreaming* LevelStreaming = UGameplayStatics::GetStreamingLevel(WorldContextObject, Level);
+	if (!LevelStreaming) return;
+	ULevel* StreamedLevel = LevelStreaming->GetLoadedLevel();
+	if (!StreamedLevel)
+		return;
+	StreamedLevel->ApplyWorldOffset(WorldOffset, WorldShift);
+
+	if (!WorldShift)
+	{
+		UWorld* World = WorldContextObject->GetWorld();
+		World->UpdateLevelStreaming();
+	}
 }

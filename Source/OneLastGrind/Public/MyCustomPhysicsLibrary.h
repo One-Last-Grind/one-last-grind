@@ -16,6 +16,9 @@ class ONELASTGRIND_API UMyCustomPhysicsLibrary : public UBlueprintFunctionLibrar
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "MyCustomPhysicsLibrary", Meta = (DefaultToSelf = Object, DisplayName = "Set Physical Material Details", Keywords = " MyCustomPhysicsLibrary physical physics material friction restitution"))
+	UFUNCTION(BlueprintCallable, Category = "MyCustomPhysicsLibrary", Meta = (DefaultToSelf = Object, DisplayName = "Set Physical Material Details", Keywords = "MyCustomPhysicsLibrary physical physics material friction restitution"))
 	static void SetPhysicalMaterialDetails(UStaticMeshComponent* Mesh, float StaticFriction, float DynamicFriction, bool bOverrideFrictionCombineMode, TEnumAsByte<EFrictionCombineMode::Type> FrictionCombineMode, float Restitution, bool bOverrideRestitutionCombineMode, TEnumAsByte<EFrictionCombineMode::Type> RestitutionCombineMode);
+	
+	UFUNCTION(BlueprintCallable, Category = "MyCustomPhysicsLibrary", Meta = (DefaultToSelf = Object, DisplayName = "Add Level Offset", Keywords = "MyCustomPhysicsLibrary"))
+	static void SetLevelOffset(UObject* WorldContextObject, FName Level, FVector WorldOffset, bool WorldShift);
 };
