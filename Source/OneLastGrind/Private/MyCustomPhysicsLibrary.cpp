@@ -21,6 +21,7 @@ void UMyCustomPhysicsLibrary::SetLevelOffset(UObject* WorldObject, FName Level, 
 	ULevelStreaming* LevelStreaming = UGameplayStatics::GetStreamingLevel(WorldContextObject, Level);
 	if (!LevelStreaming) return;
 	ULevel* StreamedLevel = LevelStreaming->GetLoadedLevel();
+
 	if (!StreamedLevel)
 		return;
 	StreamedLevel->ApplyWorldOffset(WorldOffset, WorldShift);
@@ -30,4 +31,29 @@ void UMyCustomPhysicsLibrary::SetLevelOffset(UObject* WorldObject, FName Level, 
 		UWorld* World = WorldContextObject->GetWorld();
 		World->UpdateLevelStreaming();
 	}
+
+}
+
+ALevelIndicator* UMyCustomPhysicsLibrary::GetLevelOffset(UObject* WorldObject, FName Level)
+{
+	UObject* WorldContextObject = WorldObject->GetWorld();
+	ULevelStreaming* LevelStreaming = UGameplayStatics::GetStreamingLevel(WorldContextObject, Level);
+	if (!LevelStreaming) return nullptr;
+	ULevel* StreamedLevel = LevelStreaming->GetLoadedLevel();
+
+	if (!StreamedLevel)
+		return nullptr;
+
+	TArray<AActor*> ActorsToFind;
+	UGameplayStatics::GetAllActorsOfClass(StreamedLevel->GetWorld(), ALevelIndicator::StaticClass(), ActorsToFind);
+
+	for (AActor* Actor : ActorsToFind) 
+	{
+		ALevelIndicator* LevelIndicator = Cast<ALevelIndicator>(Actor);
+
+		if (LevelIndicator->ParentLevel.IsEqual(Level)) {
+			return LevelIndicator;
+		}
+	}
+	return nullptr;
 }
