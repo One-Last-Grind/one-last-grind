@@ -10,6 +10,11 @@ ALevelIndicator::ALevelIndicator()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+FName ALevelIndicator::GetParentLevelName()
+{
+	return FName(ParentLevel.GetAssetName());
+}
+
 // Called when the game starts or when spawned
 void ALevelIndicator::BeginPlay()
 {

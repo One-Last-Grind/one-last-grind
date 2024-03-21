@@ -16,7 +16,9 @@ public:
 	ALevelIndicator();
 
 	UPROPERTY(EditAnywhere)
-	FName ParentLevel;
+	TSoftObjectPtr<UWorld> ParentLevel;
+
+	FName GetParentLevelName();
 
 protected:
 	// Called when the game starts or when spawned

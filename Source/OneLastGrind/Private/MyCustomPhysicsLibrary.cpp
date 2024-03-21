@@ -16,9 +16,9 @@ void UMyCustomPhysicsLibrary::SetPhysicalMaterialDetails(UStaticMeshComponent* M
 	Mesh->SetPhysMaterialOverride(PhysicalMaterial);
 }
 
-void UMyCustomPhysicsLibrary::SetLevelOffset(UObject* WorldObject, FName Level, FVector WorldOffset, bool WorldShift) {
+void UMyCustomPhysicsLibrary::SetLevelOffset(UObject* WorldObject, TSoftObjectPtr<UWorld> Level, FVector WorldOffset, bool WorldShift) {
 	UObject* WorldContextObject = WorldObject->GetWorld();
-	ULevelStreaming* LevelStreaming = UGameplayStatics::GetStreamingLevel(WorldContextObject, Level);
+	ULevelStreaming* LevelStreaming = UGameplayStatics::GetStreamingLevel(WorldContextObject, GetLevelName(Level));
 	if (!LevelStreaming) return;
 	ULevel* StreamedLevel = LevelStreaming->GetLoadedLevel();
 
@@ -34,26 +34,32 @@ void UMyCustomPhysicsLibrary::SetLevelOffset(UObject* WorldObject, FName Level, 
 
 }
 
-ALevelIndicator* UMyCustomPhysicsLibrary::GetLevelOffset(UObject* WorldObject, FName Level)
+void UMyCustomPhysicsLibrary::GetLevelOffset(UObject* WorldObject, TSoftObjectPtr<UWorld> CurrentLevel, TSoftObjectPtr<UWorld> NextLevel, ALevelIndicator*& CurrentLevelIndicator, ALevelIndicator*& NextLevelIndicator)
 {
 	UObject* WorldContextObject = WorldObject->GetWorld();
-	ULevelStreaming* LevelStreaming = UGameplayStatics::GetStreamingLevel(WorldContextObject, Level);
-	if (!LevelStreaming) return nullptr;
-	ULevel* StreamedLevel = LevelStreaming->GetLoadedLevel();
-
-	if (!StreamedLevel)
-		return nullptr;
 
 	TArray<AActor*> ActorsToFind;
-	UGameplayStatics::GetAllActorsOfClass(StreamedLevel->GetWorld(), ALevelIndicator::StaticClass(), ActorsToFind);
+	UGameplayStatics::GetAllActorsOfClass(WorldObject->GetWorld(), ALevelIndicator::StaticClass(), ActorsToFind);
+
+	ALevelIndicator* LevelIndicator = nullptr;
 
 	for (AActor* Actor : ActorsToFind) 
 	{
-		ALevelIndicator* LevelIndicator = Cast<ALevelIndicator>(Actor);
+		LevelIndicator = Cast<ALevelIndicator>(Actor);
 
-		if (LevelIndicator->ParentLevel.IsEqual(Level)) {
-			return LevelIndicator;
+		if (LevelIndicator->GetParentLevelName().IsEqual(GetLevelName(NextLevel)) && LevelIndicator->ActorHasTag("End")) {
+			NextLevelIndicator = LevelIndicator;
+		}
+
+		if (LevelIndicator->GetParentLevelName().IsEqual(GetLevelName(CurrentLevel)) && LevelIndicator->ActorHasTag("Start")) {
+			CurrentLevelIndicator = LevelIndicator;
 		}
 	}
-	return nullptr;
+	return;
 }
+
+const FName UMyCustomPhysicsLibrary::GetLevelName(TSoftObjectPtr<UWorld> Level)
+{
+	return FName(Level.GetAssetName());
+}
+
