@@ -1,7 +1,7 @@
-#include "MyCustomPhysicsLibrary.h"
+#include "OneLastGrindFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
-void UMyCustomPhysicsLibrary::SetPhysicalMaterialDetails(UStaticMeshComponent* Mesh, float StaticFriction, float DynamicFriction, bool bOverrideFrictionCombineMode, TEnumAsByte<EFrictionCombineMode::Type> FrictionCombineMode, float Restitution, bool bOverrideRestitutionCombineMode, TEnumAsByte<EFrictionCombineMode::Type> RestitutionCombineMode) {
+void UOneLastGrindFunctionLibrary::SetPhysicalMaterialDetails(UStaticMeshComponent* Mesh, float StaticFriction, float DynamicFriction, bool bOverrideFrictionCombineMode, TEnumAsByte<EFrictionCombineMode::Type> FrictionCombineMode, float Restitution, bool bOverrideRestitutionCombineMode, TEnumAsByte<EFrictionCombineMode::Type> RestitutionCombineMode) {
 	UPhysicalMaterial* PhysicalMaterial = NewObject<UPhysicalMaterial>();
 
 	PhysicalMaterial->Friction = DynamicFriction;
@@ -16,7 +16,7 @@ void UMyCustomPhysicsLibrary::SetPhysicalMaterialDetails(UStaticMeshComponent* M
 	Mesh->SetPhysMaterialOverride(PhysicalMaterial);
 }
 
-void UMyCustomPhysicsLibrary::SetLevelOffset(UObject* WorldObject, TSoftObjectPtr<UWorld> Level, FVector WorldOffset, bool WorldShift) {
+void UOneLastGrindFunctionLibrary::SetLevelOffset(UObject* WorldObject, TSoftObjectPtr<UWorld> Level, FVector WorldOffset, bool WorldShift) {
 	UObject* WorldContextObject = WorldObject->GetWorld();
 	ULevelStreaming* LevelStreaming = UGameplayStatics::GetStreamingLevel(WorldContextObject, GetLevelName(Level));
 	if (!LevelStreaming) return;
@@ -34,7 +34,7 @@ void UMyCustomPhysicsLibrary::SetLevelOffset(UObject* WorldObject, TSoftObjectPt
 
 }
 
-void UMyCustomPhysicsLibrary::GetLevelOffset(UObject* WorldObject, TSoftObjectPtr<UWorld> CurrentLevel, TSoftObjectPtr<UWorld> NextLevel, ALevelIndicator*& CurrentLevelIndicator, ALevelIndicator*& NextLevelIndicator)
+void UOneLastGrindFunctionLibrary::GetLevelOffset(UObject* WorldObject, TSoftObjectPtr<UWorld> CurrentLevel, TSoftObjectPtr<UWorld> NextLevel, ALevelIndicator*& CurrentLevelIndicator, ALevelIndicator*& NextLevelIndicator)
 {
 	UObject* WorldContextObject = WorldObject->GetWorld();
 
@@ -58,7 +58,7 @@ void UMyCustomPhysicsLibrary::GetLevelOffset(UObject* WorldObject, TSoftObjectPt
 	return;
 }
 
-const FName UMyCustomPhysicsLibrary::GetLevelName(TSoftObjectPtr<UWorld> Level)
+const FName UOneLastGrindFunctionLibrary::GetLevelName(TSoftObjectPtr<UWorld> Level)
 {
 	return FName(Level.GetAssetName());
 }
