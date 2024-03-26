@@ -45,10 +45,6 @@
 SourceArt/**/*.png
 SourceArt/**/*.tga
 
-# Binary Files
-Binaries/*
-Plugins/*/Binaries/*
-
 # Builds
 Build/*
 
@@ -72,3 +68,20 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Binary Files
+Binaries/*
+!Binaries/Win64
+Binaries/Win64/*
+!Binaries/Win64/OneLastGrindEditor.target
+!Binaries/Win64/UnrealEditor.modules
+!Binaries/Win64/UnrealEditor-OneLastGrind.dll
+Binaries/Win64/*-[0-9][0-9][0-9][0-9].dll
+Plugins/*/*
+!Plugins/*/Binaries
+Plugins/*/Binaries/*
+!Plugins/*/Binaries/Win64
+Plugins/*/Binaries/Win64/*
+!Plugins/*/Binaries/Win64/UnrealEditor-*.dll
+Plugins/*/Binaries/Win64/*-[0-9][0-9][0-9][0-9].dll
+!Plugins/*/Binaries/Win64/UnrealEditor.modules 
