@@ -41,6 +41,10 @@
 *.VC.db
 *.VC.opendb
 
+.vsconfig
+.editorconfig
+shadertoolsconfig.json
+
 # Precompiled Assets
 SourceArt/**/*.png
 SourceArt/**/*.tga
@@ -85,3 +89,4 @@ Plugins/*/Binaries/Win64/*
 !Plugins/*/Binaries/Win64/UnrealEditor-*.dll
 Plugins/*/Binaries/Win64/*-[0-9][0-9][0-9][0-9].dll
 !Plugins/*/Binaries/Win64/UnrealEditor.modules 
+
