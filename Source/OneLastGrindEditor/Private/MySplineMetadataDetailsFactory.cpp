@@ -11,7 +11,7 @@
 #include <ComponentVisualizer.h>
 #include <Editor.h>
 
-#include "OneLastGrind/MySplineMetadata.h"
+#include "OneLastGrind/Public/MySplineMetadata.h"
 
 #define LOCTEXT_NAMESPACE "FMySplineMetadataDetailsFactory"
 
