@@ -10,6 +10,7 @@ public class OneLastGrindEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;
-		ExtraModuleNames.Add("OneLastGrind");
-	}
+        ExtraModuleNames.Add("OneLastGrind");
+        ExtraModuleNames.Add("OneLastGrindEditor");
+    }
 }
